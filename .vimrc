@@ -1,6 +1,6 @@
 " Kurt's .vimrc
 
-" Use Vim settings, rather than Vi settings (much better!).
+" Use Vim settings, rather than Vi settings (much better!)
 set nocompatible
 
 " Settings
@@ -24,6 +24,23 @@ set backspace=eol
 set backspace=start
 set laststatus=2        " make airline show up
 set ttimeoutlen=50      " make airline exit insert mode faster
+
+" Set up undofile
+" http://stackoverflow.com/a/22676189
+" Put plugins and dictionaries in this dir (also on Windows)
+let vimDir = '$HOME/.vim'
+let &runtimepath.=','.vimDir
+
+" Keep undo history across sessions by storing it in a file
+if has('persistent_undo')
+    let myUndoDir = expand(vimDir . '/undodir')
+    " Create dirs
+    call system('mkdir ' . vimDir)
+    call system('mkdir ' . myUndoDir)
+    let &undodir = myUndoDir
+    set undofile
+endif
+" End set up undofile
 
 " Lettings
 let mapleader = ","
@@ -84,8 +101,36 @@ autocmd BufNewFile,BufRead *.markdown,*.md,*.mdown,*.mkd,*.mkdn
 " Break undo at each line break & trigger abbreviation
 inoremap <CR> <C-]><C-G>u<CR>
 
+" Utility
 " map <F2> :NERDTreeToggle<CR>      " exactly what it sounds like
-map <F10> :let @/ = ""<CR>        " clear search string to clear highlight
+" clear search string to clear highlight
+map <F10> :let @/=""<CR>
+" Utility mappings from [Vim After 11 Years](http://statico.github.io/vim.html)
+nmap <Leader>l :setlocal number!<CR>
+nmap <Leader>o :set paste!<CR>
+nmap <Leader>m :nohlsearch<CR>
 
 " Change DiffText highlight for legibility
 highlight DiffText ctermbg=011 guibg=yellow
+
+" Setup closetag.vim
+autocmd FileType html,htmldjango,jinjahtml,eruby,mako let b:closetag_html_style=1
+autocmd FileType html,xhtml,xml,htmldjango,jinjahtml,eruby,mako source ~/.vim/bundle/closetag/plugin/closetag.vim
+
+" Replace two dot leader digraph with ellipsis
+digraph .. 8230
+
+" ember-cli and broccoli compatibility: https://ember-cli.com/user-guide/#vim
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+set undodir=~/.vim/undo//
+
+" Exclude some files and directories from CtrlP
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/node_modules/*
+" set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+" let g:ctrlp_custom_ignore = {
+"   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+"   \ 'file': '\v\.(exe|so|dll)$',
+"   \ 'link': 'some_bad_symbolic_links',
+"   \ }
